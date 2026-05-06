@@ -503,7 +503,6 @@ func (h *handshake) synRcvdState(s *segment) tcpip.Error {
 		// to be processed by the newly established endpoint.
 		if (s.flags.Contains(header.TCPFlagFin) || s.payloadSize() > 0) && h.ep.enqueueSegment(s) {
 			h.ep.protocol.dispatcher.selectProcessor(h.ep.ID).queueEndpoint(h.ep)
-
 		}
 		return nil
 	}
@@ -596,6 +595,7 @@ func (h *handshake) start() {
 		seq:       h.iss,
 		ack:       h.ackNum,
 		rcvWnd:    h.rcvWnd,
+		df:        h.ep.pmtud == tcpip.PMTUDiscoveryWant || h.ep.pmtud == tcpip.PMTUDiscoveryDo || h.ep.pmtud == tcpip.PMTUDiscoveryProbe,
 		expOptVal: h.ep.getExperimentOptionValue(h.ep.route),
 	}, synOpts)
 }
